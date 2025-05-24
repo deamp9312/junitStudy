@@ -1,0 +1,57 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.0'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.junitTest'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// ✅ 테스트 관련 의존성
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.mockito:mockito-inline:5.2.0' // final 클래스 등을 mock할 수 있게 함
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+//	testImplementation 'org.seleniumhq.selenium:selenium-java:4.10.0'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+
+	doFirst {
+		// Byte Buddy agent 위치 찾기 (mockito-inline에서 내부적으로 사용됨)
+		def byteBuddyAgentJar = configurations.testRuntimeClasspath.find {
+			it.name.contains("byte-buddy-agent")
+		}
+
+		if (byteBuddyAgentJar) {
+			println "Applying -javaagent for byte-buddy-agent"
+			jvmArgs "-javaagent:${byteBuddyAgentJar.absolutePath}"
+		} else {
+			println "WARNING: byte-buddy-agent not found in testRuntimeClasspath"
+		}
+	}
+}
