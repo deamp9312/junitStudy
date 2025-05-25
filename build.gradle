@@ -36,6 +36,8 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 //	testImplementation 'org.seleniumhq.selenium:selenium-java:4.10.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.2' // 버전은 사용 중인 JUnit5 버전에 맞게
+
 }
 
 tasks.named('test') {
