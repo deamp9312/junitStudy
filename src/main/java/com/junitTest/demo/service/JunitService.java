@@ -15,6 +15,5 @@ public class JunitService {
     public JunitEntity getData(Long id){
         Optional<JunitEntity> byId = repository.findById(id);
         return byId.get();
-
     }
 }
